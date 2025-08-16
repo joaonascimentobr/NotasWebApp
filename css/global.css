@@ -1,0 +1,29 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+}
+body {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+}
+
+
+section > div {
+   
+    width: 500px;
+    padding-top: 10px;    
+}
+
+
+
+input {
+    border-color: black;
+    border-radius: 5px;
+    border: 1px solid #b8b8b8;
+}
+input {
+  -webkit-text-stroke: none; /* For Webkit browsers */
+}
