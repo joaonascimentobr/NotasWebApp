@@ -62,104 +62,82 @@ on:
   # push:
   #   branches: [ "main" ]
 
+  # pull_request_target is used to securely share secret to the PR's workflow run.
+  # For more info visit: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target
   pull_request_target:
     branches: [ "main" ]
     types: [opened, synchronize, reopened, labeled]
 
 permissions:
   contents: read
-  pull-requests: write   # ← necessário para ler/criar labels/comentar em PR
-  issues: write          # ← algumas actions usam a API de "issues" p/ labels
+  issues: write
+  pull-requests: write
 
 jobs:
   crda-scan:
+    permissions:
+      contents: read            # for actions/checkout to fetch code
+      security-events: write    # for redhat-actions/crda to upload SARIF results
+      issues: write
     name: Scan project vulnerabilities with CRDA
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      security-events: write   # para subir SARIF no Code Scanning
-      pull-requests: write
-      issues: write
-
     steps:
-      # ------------------------------------------------------------------
-      # 1) Gate de segurança: só prossegue se o PR tiver o label 'ok-to-scan'
-      # ------------------------------------------------------------------
+      # 1) Gate: só roda se o PR tiver o label ok-to-scan
       - name: Gate — exigir label de aprovação
         id: gate
-        uses: actions/github-script@v7   # <-- SUBSTITUA_POR_SHA (repo: actions/github-script, tag v7)
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const okLabel = 'ok-to-scan';
             const { owner, repo } = context.repo;
             const pr = context.payload.number;
 
-            const labels = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: pr
-            });
-
+            const labels = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: pr });
             const has = labels.data.some(l => l.name === okLabel);
             core.setOutput('approved', has ? 'true' : 'false');
 
             if (!has) {
               await github.rest.issues.createComment({
                 owner, repo, issue_number: pr,
-                body: `⚠️ Segurança: adicione o label **${okLabel}** para autorizar o scan com secrets.\n\n` +
-                      `> Dica: mantenedores podem aplicar esse label quando o PR for confiável.`
+                body:
+                  `⚠️ Segurança: adicione o label **${okLabel}** para autorizar o scan com secrets.\n\n` +
+                  `> Dica: mantenedores podem aplicar esse label quando o PR for confiável.`
               });
             }
 
-      # --------------------------------------------------------------
-      # 2) Checkout do HEAD do PR — SOMENTE após o gate aprovado
-      #    (em pull_request_target o default seria o commit da base)
-      # --------------------------------------------------------------
+      # 2) Checkout do HEAD do PR (inclusive forks) — só após aprovação
       - name: Check out PR HEAD (após aprovação)
         if: steps.gate.outputs.approved == 'true'
-        uses: actions/checkout@v5   # <-- SUBSTITUA_POR_SHA (repo: actions/checkout, tag v5)
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false   # não reutilizar credenciais
+          persist-credentials: false
 
-      # --------------------------------------------------------------
-      # 3) (Opcional) Setup de stack — ajuste ao seu projeto
-      #    Ex.: Node, Java, Python etc. com actions *pinadas por SHA*
-      # --------------------------------------------------------------
-      # - name: Setup Node
-      #   uses: actions/setup-node@<SHA_DO_SETUP_NODE_V4>     # <-- SUBSTITUA_POR_SHA (repo: actions/setup-node, tag v4)
-      #   if: steps.gate.outputs.approved == 'true'
-      #   with:
-      #     node-version: '20'
+      # (Opcional) Setup de linguagem do projeto aqui (Node/Java/Python/Go) — também pinado por SHA
 
-      # --------------------------------------------------------------
-      # 4) Instalar a CLI do CRDA
-      # --------------------------------------------------------------
+      # 3) Instalar a CLI do CRDA
       - name: Install CRDA CLI
         if: steps.gate.outputs.approved == 'true'
-        uses: redhat-actions/openshift-tools-installer@v1  # <-- SUBSTITUA_POR_SHA (repo: redhat-actions/openshift-tools-installer, tag v1)
+        uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82
         with:
           source: github
           github_pat: ${{ github.token }}
           crda: "latest"
 
-      # --------------------------------------------------------------
-      # 5) Rodar o scan do CRDA (gera SARIF e publica no Code Scanning)
-      #    Use CRDA_KEY ou SNYK_TOKEN via secrets
-      # --------------------------------------------------------------
+      # 4) Rodar o scan (gera SARIF em Security > Code scanning)
       - name: CRDA Scan
         if: steps.gate.outputs.approved == 'true'
-        uses: redhat-actions/crda@v1   # <-- SUBSTITUA_POR_SHA (repo: redhat-actions/crda, tag v1)
+        uses: redhat-actions/crda@6310ee94a6ac8f76b4152b7267c6cd7f1277052c
         with:
           crda_key: ${{ secrets.CRDA_KEY }}
           # snyk_token: ${{ secrets.SNYK_TOKEN }}
-          # upload_artifact: false   # descomente se quiser evitar o artefato SARIF adicional
+          # upload_artifact: false
 
-      # --------------------------------------------------------------
-      # 6) (Opcional) Comentar um resumo no PR
-      # --------------------------------------------------------------
+      # 5) Comentário de status no PR
       - name: Comentar status no PR
         if: always() && steps.gate.outputs.approved == 'true'
-        uses: actions/github-script@v7   # <-- SUBSTITUA_POR_SHA (repo: actions/github-script, tag v7)
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const { owner, repo } = context.repo;
