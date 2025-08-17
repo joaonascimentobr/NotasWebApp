@@ -64,7 +64,7 @@ on:
 
   pull_request_target:
     branches: [ "main" ]
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled]
 
 permissions:
   contents: read
@@ -76,10 +76,11 @@ jobs:
     name: Scan project vulnerabilities with CRDA
     runs-on: ubuntu-latest
 
-    # Permissões específicas do job (sobrescrevem/estreitam as globais)
     permissions:
       contents: read
       security-events: write   # para subir SARIF no Code Scanning
+      pull-requests: write
+      issues: write
 
     steps:
       # ------------------------------------------------------------------
