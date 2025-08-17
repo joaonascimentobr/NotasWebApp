@@ -70,6 +70,8 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write   # ← necessário para ler/criar labels/comentar em PR
+  issues: write          # ← algumas actions usam a API de "issues" p/ labels
 
 jobs:
   crda-scan:
