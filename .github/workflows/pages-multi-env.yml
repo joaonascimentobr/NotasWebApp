@@ -1,0 +1,110 @@
+# .github/workflows/pages-multi-env.yml
+name: Pages - prod, develop e PR preview
+
+on:
+  push:
+    branches:
+      - main        # produção
+      - develop     # staging da develop
+  pull_request:
+    types: [opened, synchronize, reopened]  # previews por PR
+
+permissions:
+  contents: write   # necessário para commitar no branch gh-pages
+  pull-requests: write  # comentar no PR com a URL do preview
+
+concurrency:
+  group: pages-${{ github.ref }}   # evita concorrência por ref
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    # Só uma matriz simples p/ identificar o tipo de evento/ref
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Config opcional do Pages (não publicamos via actions/deploy-pages,
+      # mas ajuda a padronizar alguns metadados)
+      - name: Setup Pages (opcional)
+        uses: actions/configure-pages@v5
+
+      # --- Build do Jekyll ---
+      # Se você já tem Gemfile, Jekyll etc., pode usar a action oficial de build
+      - name: Build com Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      # --- Determinar DESTINO no gh-pages conforme o gatilho ---
+      - name: Definir destino de publicação (dest_dir)
+        id: dest
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "main" ]]; then
+            echo "dir=." >> $GITHUB_OUTPUT             # raiz (produção)
+          elif [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "develop" ]]; then
+            echo "dir=preview/develop" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            echo "dir=preview/pr-${{ github.event.number }}" >> $GITHUB_OUTPUT
+          else
+            echo "Evento não suportado"; exit 1
+          fi
+          echo "Destino: $(cat $GITHUB_OUTPUT)"
+
+      # --- Publicar no branch gh-pages em subpasta específica ---
+      # Usamos keep_files: true para NÃO apagar outras pastas (ex.: outros PRs ou prod)
+      - name: Publicar no branch gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: _site
+          destination_dir: ${{ steps.dest.outputs.dir }}
+          keep_files: true
+          # Opcional: definir autor do commit
+          user_name: "github-actions[bot]"
+          user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # Comenta a URL no PR — funciona:
+      # 1) quando é evento pull_request
+      # 2) quando é push com PR associado ao commit (busca via API)
+      - name: Comentar URL do preview no PR
+        uses: actions/github-script@v7
+        env:
+          DEST_DIR: ${{ steps.dest.outputs.dir }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+
+            // Descobrir o número do PR:
+            let prNumber = null;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.number;
+            } else if (context.eventName === 'push') {
+              // Procura PR(s) associados ao commit desta execução
+              const res = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner, repo, commit_sha: context.sha
+              });
+              const openPR = res.data.find(pr => pr.state === 'open');
+              if (openPR) prNumber = openPR.number;
+            }
+
+            if (!prNumber) {
+              core.info('Nenhum PR associado encontrado; nada a comentar.');
+              return;
+            }
+
+            // Monta a URL pública do Pages
+            const base = `https://${owner}.github.io/${repo}`;
+            const dest = process.env.DEST_DIR;
+            // normalizar caminho (raiz vs subpastas)
+            const url  = dest === '.' ? `${base}/` : `${base}/${dest.replace(/^\/*/, '')}/`;
+
+            const body = `🔍 **PR Preview publicado:** ${url}`;
+            await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
