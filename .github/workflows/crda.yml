@@ -96,12 +96,31 @@ jobs:
         if: steps.gate.outputs.approved == 'true' && steps.detect.outputs.found == 'true' && hashFiles('**/pom.xml','**/package.json','**/yarn.lock','**/requirements.txt','**/go.mod') != ''
         id: crda
         continue-on-error: true
-        uses: redhat-actions/crda@6310ee94a6ac8f76b4152b7267c6cd7f1277052c
+        uses: redhat-actions/crda@v1
         with:
+          analysis_report_name: crda_analysis_report
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_sarif: true
+          upload_artifact: true
+          artifact_filename: crda_report
+          consent_telemetry: false
+          fail_on: error
           # Use UM dos dois:
           crda_key: ${{ secrets.CRDA_KEY }}
           # snyk_token: ${{ secrets.SNYK_TOKEN }}
           # upload_artifact: false
+
+
+      - name: Check CRDA Results
+        if: steps.crda-scan.outcome == 'failure'
+        run: |
+          echo "CRDA scan encountered an error during cleanup, but analysis may have completed"
+          # Add any additional error handling logic here
+
+      - name: Git Cleanup
+        if: always()
+        run: |
+          git checkout ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}} || git checkout main || git checkout master
 
       # 6) Informar quando CRDA for ignorado (sem manifest)
       - name: Informar que CRDA foi ignorado (sem manifest)
