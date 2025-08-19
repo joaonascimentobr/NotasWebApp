@@ -93,7 +93,7 @@ jobs:
 
       # 5) Rodar CRDA (com hotfix para não falhar pipeline se cleanup do CRDA der erro)
       - name: CRDA Scan
-        if: steps.gate.outputs.approved == 'true' && steps.detect.outputs.found == 'true'
+        if: steps.gate.outputs.approved == 'true' && steps.detect.outputs.found == 'true' && hashFiles('**/pom.xml','**/package.json','**/yarn.lock','**/requirements.txt','**/go.mod') != ''
         id: crda
         continue-on-error: true
         uses: redhat-actions/crda@6310ee94a6ac8f76b4152b7267c6cd7f1277052c
