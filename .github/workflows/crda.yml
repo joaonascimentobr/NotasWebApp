@@ -28,69 +28,85 @@ jobs:
       pull-requests: write
 
     steps:
-      # 1) Gate: exige label de aprovação (ok-to-scan ou CRDA Scan Approved)
+      # 1) Gate: exige label de aprovação
       - name: Gate — exigir label de aprovação
         id: gate
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
-            const approvedLabels = ['ok-to-scan', 'CRDA Scan Approved'];
+            const approved = ['ok-to-scan','CRDA Scan Approved'];
             const { owner, repo } = context.repo;
             const n = context.payload.pull_request.number;
-
-            const { data } = await github.rest.issues.listLabelsOnIssue({
-              owner, repo, issue_number: n
-            });
-            const has = data.some(l => approvedLabels.includes(l.name));
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: n });
+            const has = labels.some(l => approved.includes(l.name));
             core.setOutput('approved', has ? 'true' : 'false');
-
             if (!has) {
               await github.rest.issues.createComment({
                 owner, repo, issue_number: n,
-                body:
-                  `⚠️ Segurança: adicione o label **${approvedLabels.join('** ou **')}** para autorizar o scan com secrets.\n\n` +
-                  `> Dica: mantenedores podem aplicar esse label quando o PR for confiável.`
+                body: `⚠️ Segurança: adicione o label **${approved.join('** ou **')}** para autorizar o scan com secrets.`
               });
             }
 
-      # 2) Checkout da BRANCH BASE do PR (nomeada) — evita detached HEAD
-      - name: Check out base branch (nomeada)
+      # 2) Checkout da branch base (por nome) e CRIA uma branch local nomeada
+      #    Isso garante que `git branch --show-current` NÃO esteja vazio dentro do CRDA.
+      - name: Checkout base branch
         if: steps.gate.outputs.approved == 'true'
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.ref }}   # ex.: "main"
+          ref: ${{ github.event.pull_request.base.ref }} # ex.: main
           fetch-depth: 0
           persist-credentials: false
 
-      # 3) (Opcional) ecoar a branch atual só para confirmar que não está detached
-      - name: Mostrar branch atual
+      - name: Garantir HEAD não destacado (branch nomeada)
         if: steps.gate.outputs.approved == 'true'
-        run: git branch --show-current
+        run: |
+          set -euo pipefail
+          BASE_REF='${{ github.event.pull_request.base.ref }}'
+          # Cria/atualiza uma branch local explicitamente
+          git checkout -B crda-base-${{ github.run_id }} origin/${BASE_REF} || git checkout -B crda-base-${{ github.run_id }}
+          echo "Branch atual: $(git branch --show-current)"
 
-      # 4) Instalar a CLI do CRDA
-      - name: Instalar CRDA CLI
+      # 3) Detectar se existe manifest suportado
+      - name: Detectar manifest suportado
+        id: detect
         if: steps.gate.outputs.approved == 'true'
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          files=( **/pom.xml **/package.json **/yarn.lock **/requirements.txt **/go.mod )
+          if [ ${#files[@]} -gt 0 ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            printf 'Encontrados manifests:\n%s\n' "${files[@]}"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "Nenhum manifest suportado encontrado."
+          fi
+
+      # 4) Instalar CLI do CRDA
+      - name: Instalar CRDA CLI
+        if: steps.gate.outputs.approved == 'true' && steps.detect.outputs.found == 'true'
         uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82
         with:
           source: github
           github_pat: ${{ github.token }}
           crda: "latest"
 
-      # 5) Rodar o CRDA apenas se existir manifest suportado
+      # 5) Rodar CRDA (com hotfix para não falhar pipeline se cleanup do CRDA der erro)
       - name: CRDA Scan
-        if: steps.gate.outputs.approved == 'true' && hashFiles('**/pom.xml','**/package.json','**/yarn.lock','**/requirements.txt','**/go.mod') != ''
+        if: steps.gate.outputs.approved == 'true' && steps.detect.outputs.found == 'true'
         id: crda
-        continue-on-error: true   # hotfix para não quebrar por causa do cleanup do CRDA
+        continue-on-error: true
         uses: redhat-actions/crda@6310ee94a6ac8f76b4152b7267c6cd7f1277052c
         with:
-          # Use UM dos dois segredos:
+          # Use UM dos dois:
           crda_key: ${{ secrets.CRDA_KEY }}
           # snyk_token: ${{ secrets.SNYK_TOKEN }}
           # upload_artifact: false
 
-      # 6) Aviso: sem manifest — CRDA ignorado
+      # 6) Informar quando CRDA for ignorado (sem manifest)
       - name: Informar que CRDA foi ignorado (sem manifest)
-        if: steps.gate.outputs.approved == 'true' && steps.crda.outcome == ''
+        if: steps.gate.outputs.approved == 'true' && steps.detect.outputs.found != 'true'
+        continue-on-error: true
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
@@ -98,12 +114,13 @@ jobs:
             const n = context.payload.pull_request.number;
             await github.rest.issues.createComment({
               owner, repo, issue_number: n,
-              body: "ℹ️ CRDA **ignorado**: nenhum manifest suportado encontrado (`pom.xml`, `package.json`, `yarn.lock`, `requirements.txt` ou `go.mod`)."
+              body: "ℹ️ CRDA **ignorado**: nenhum manifest suportado (`pom.xml`, `package.json`, `yarn.lock`, `requirements.txt`, `go.mod`)."
             });
 
-      # 7) Comentário final de status
+      # 7) Comentário final — não deixar o job falhar se a API negar (403)
       - name: Comentar status no PR
         if: always() && steps.gate.outputs.approved == 'true'
+        continue-on-error: true
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
@@ -112,5 +129,17 @@ jobs:
             const outcome = '${{ job.status }}';
             const msg = outcome === 'success'
               ? '✅ CRDA scan concluído. Veja **Security → Code scanning alerts**.'
-              : '❌ CRDA scan falhou. Verifique os logs em **Actions**.';
+              : '❌ CRDA scan falhou (ou foi parcialmente concluído). Verifique os logs em **Actions**.';
             await github.rest.issues.createComment({ owner, repo, issue_number: n, body: msg });
+
+      # 8) Sempre escrever um resumo no job (não depende de permissão de escrita)
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### CRDA"
+            echo
+            echo "- Gate aprovado: ${{ steps.gate.outputs.approved }}"
+            echo "- Manifest encontrado: ${{ steps.detect.outputs.found || 'false' }}"
+            echo "- Status do job: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"
