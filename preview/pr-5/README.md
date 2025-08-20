@@ -14,6 +14,15 @@ Usuários a partir de 16 anos.
 
 ---
 
+## 🌐 **Plataformas**
+O aplicativo estará disponível para as seguintes plataformas:
+- **Web App**  
+- **Android**  
+- **iOS**  
+- **PC (Windows)**  
+
+---
+
 ## 📋 **Funcionalidades**
 - Criação de listas de tarefas, compras e atividades diárias.
 - Personalização de cores para cada item.
@@ -40,6 +49,8 @@ Usuários a partir de 16 anos.
 
 ## 📱 **Capturas de Tela**
 *(Adicione imagens ou GIFs do aplicativo aqui para atrair mais visualizações.)*
+![Texto alternativo](caminho/para/a/imagem)
+
 
 ---
 
