@@ -7,7 +7,7 @@ function login() {
 
   console.log("Email:", email);
   console.log("Password:", password);
-//   window.location.href = "telaPrincipal/telaPrincipal.html";
+  window.location.href = "telaPrincipal/telaPrincipal.html";
 }
 
 let form = document.querySelector("form");
