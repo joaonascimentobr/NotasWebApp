@@ -11,7 +11,7 @@ Pronto!
 caso de problemas, chamar no email: pedrinhouhggez@gmail.com
 
 # O que fazer depois de baixar?
-Basta executar "php -S localhost:8000" no Terminal 
+Basta executar "php -S localhost:8000 -t public" no Terminal 
 !! Precisa ter o PHP instalado !!
 
 # Aplicativo de Anotações
