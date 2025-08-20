@@ -1,3 +1,19 @@
+# Como usar o Composer?
+Baixe o composer-setup.exe no (site oficial)[https://getcomposer.org/download/]
+Depois de baixar, execute-o
+Pronto, agora, caso você abra um terminal novo (Cmd, Powershell) e digitar "composer", vai aparecer os comandos do composer.
+Agora, aqui neste projeto, você vai abrir o terminal com o caminho do projeto (Ou crie um terminal no Visual Code)
+Digite "composer install" ou "composer update" e você instalará todas as dependencias do projeto.
+Pronto!
+
+!! LEMBRE-SE, DEPOIS DE BAIXAR, TEM QUE REINICIAR O VISUAL CODE STUDIO
+
+caso de problemas, chamar no email: pedrinhouhggez@gmail.com
+
+# O que fazer depois de baixar?
+Basta executar "php -S localhost:8000" no Terminal 
+!! Precisa ter o PHP instalado !!
+
 # Aplicativo de Anotações
 
 Um aplicativo simples e intuitivo para criar e gerenciar listas de itens.

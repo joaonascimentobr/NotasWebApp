@@ -1,0 +1,50 @@
+main {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    row-gap: 20px;
+
+}
+
+/* main > div {
+    display: flex;
+    justify-content: center;
+} */
+
+.listatext {
+    background-color: rgba(58, 58, 58, 0.438);
+    border-radius: 20px;
+    width: 75%;
+    border-color: white;
+    border-style: solid;
+}
+#parteLixeira {
+    width: 15%;
+    position: relative;
+    left: 85%;
+    border-style: solid;
+    border-color: white;
+    border-radius: 100%;
+
+}
+/* .iconesEstrela_editar {
+    
+    position: relative;
+    top: 70%;
+    height: 30%;
+} */
+a {
+    text-decoration: none;
+    color: black;
+}
+
+footer {
+    border: 1px solid black;
+    border-radius: 2px;
+    width: 75%;
+    height: 10px;
+    position: relative;
+    bottom: 100%;
+    left: 15%;
+    top: 10%;
+}
