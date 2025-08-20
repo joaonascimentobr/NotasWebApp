@@ -50,6 +50,8 @@ O aplicativo estará disponível para as seguintes plataformas:
 ## 📱 **Capturas de Tela**
 *(Adicione imagens ou GIFs do aplicativo aqui para atrair mais visualizações.)*
 
+![Texto alternativo](caminho/para/a/imagem)
+
 ---
 
 ## 🛠️ **Tecnologias Utilizadas**
@@ -73,4 +75,5 @@ Este projeto está licenciado sob a [Licença MIT](LICENSE).
 ## 📧 **Contato**
 Caso tenha dúvidas ou sugestões, entre em contato:  
 **Nome:** João Nascimento  
+
 **Email:** [seuemail@exemplo.com](mailto:seuemail@exemplo.com)
