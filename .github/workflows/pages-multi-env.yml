@@ -65,6 +65,7 @@ jobs:
 
       # --- Publicar no branch gh-pages (pula PR de fork) ---
       - name: Publicar no branch gh-pages
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name != 'pull_request' || steps.forkcheck.outputs.is_fork == 'false' }}
         with:
