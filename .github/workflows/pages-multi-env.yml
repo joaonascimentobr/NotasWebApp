@@ -59,6 +59,7 @@ jobs:
       # --- Publicar no branch gh-pages em subpasta específica ---
       # Usamos keep_files: true para NÃO apagar outras pastas (ex.: outros PRs ou prod)
       - name: Publicar no branch gh-pages
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -74,6 +75,7 @@ jobs:
       # 1) quando é evento pull_request
       # 2) quando é push com PR associado ao commit (busca via API)
       - name: Comentar URL do preview no PR
+        continue-on-error: true
         uses: actions/github-script@v7
         env:
           DEST_DIR: ${{ steps.dest.outputs.dir }}
