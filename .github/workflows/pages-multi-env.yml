@@ -113,6 +113,7 @@ jobs:
 
       # --- Se PR for de fork, deixar um comentário explicando por que não publicou ---
       - name: Explicar por que não publicou (fork)
+        continue-on-error: true
         uses: actions/github-script@v7
         if: ${{ github.event_name == 'pull_request' && steps.forkcheck.outputs.is_fork == 'true' }}
         with:
