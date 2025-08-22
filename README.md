@@ -1,8 +1,8 @@
-### VIDEOS SOBRE O SISTEMA DE API QUE EU ESTOU USANDO
+## VIDEOS SOBRE O SISTEMA DE API QUE EU ESTOU USANDO
 https://www.youtube.com/playlist?list=PLyugqHiq-SKd19gZb3gt9dVLGW1JJOO9e
 
 # Como usar o Composer?
-Baixe o composer-setup.exe no [site oficial][https://getcomposer.org/download/]
+Baixe o composer-setup.exe no [site oficial](https://getcomposer.org/download/)
 Depois de baixar, execute-o
 Pronto, agora, caso você abra um terminal novo (Cmd, Powershell) e digitar "composer", vai aparecer os comandos do composer.
 Agora, aqui neste projeto, você vai abrir o terminal com o caminho do projeto (Ou crie um terminal no Visual Code)
