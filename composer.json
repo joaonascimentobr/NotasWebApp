@@ -11,5 +11,7 @@
             "email": "pedrogabrielofc@hotmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "league/plates": "3.4"
+    }
 }

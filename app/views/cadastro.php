@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../css/global.css" />
-    <link rel="stylesheet" href="../css/cadastro.css" />
+    <link rel="stylesheet" href="../../public/css/global.css" />
+    <link rel="stylesheet" href="../../public/css/cadastro.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
@@ -95,7 +95,7 @@
               Volte a usar o Bloco de Nota. Se você já tem uma conta, clique no
               botão abaixo para entrar.
             </p>
-            <a href="../index.html">
+            <a href="/login">
               <button class="btn btn-light w-100">Clique aqui</button>
             </a>
           </div>

@@ -35,7 +35,11 @@ class Router
     {
         return [
             'get' => [
-                '/' => fn () => self::load('HomeController', 'index')
+                '/' => fn () => self::load('HomeController', 'index'),
+                '/login' => fn () => self::load('HomeController', 'index'),
+                '/cadastro' => fn () => self::load('CadastroController', 'index'),
+                '/registro' => fn () => self::load('CadastroController', 'index'),
+                '/notas' => fn () => self::load('NotasController', 'index'),
             ],
 
             'post' => [
@@ -57,24 +61,65 @@ class Router
             $routes = self::routes();
             $request = Request::get();
             $uri = Uri::get('path');
-
+    
+            // Verifica se a URL é um arquivo estático (como .css, .js)
+            $staticExtensions = ['css', 'js', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'ico'];
+            $uriParts = explode('.', $uri);
+            $extension = end($uriParts);
+    
+            if (in_array($extension, $staticExtensions)) {
+                // Serve o arquivo estático
+                self::serveStaticFile($uri);
+                return;
+            }
+    
             if (!isset($routes[$request])) {
                 throw new Exception('A rota não existe');
             }
-
+    
             if (!array_key_exists($uri, $routes[$request])) {
                 throw new Exception('A rota não existe');
             }
-
+    
             $router = $routes[$request][$uri];
-
+    
             if (!is_callable($router)) {
                 throw new Exception("Route {$uri} is not callable");
             }
-
+    
             $router();
         } catch (\Throwable $th) {
             echo $th->getMessage();
         }
     }
+    
+    private static function serveStaticFile($uri)
+    {
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . $uri;
+        if (file_exists($filePath)) {
+            // Definir o tipo MIME apropriado
+            $mimeTypes = [
+                'css' => 'text/css',
+                'js' => 'application/javascript',
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'svg' => 'image/svg+xml',
+                'ico' => 'image/x-icon',
+            ];
+    
+            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+            header('Content-Type: ' . $mimeTypes[$extension] ?? 'application/octet-stream');
+            readfile($filePath);
+            exit;
+        } else {
+            header("HTTP/1.0 404 Not Found");
+            echo "Arquivo não encontrado: {$uri}";
+        }
+    }
+    
+
+    
+
 }
