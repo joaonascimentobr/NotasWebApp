@@ -21,7 +21,8 @@
 		"vscode": {
 			"extensions": [
 				"github.vscode-github-actions",
-				"ms-azuretools.vscode-containers"
+				"ms-azuretools.vscode-containers",
+				"ritwickdey.LiveServer"
 			]
 		}
 	}
