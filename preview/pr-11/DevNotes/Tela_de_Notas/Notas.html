@@ -16,13 +16,12 @@
       </a>    
     </header>
 
-    
     <section>
       <div class="bloco">
-        <input type="text" class="input-titulo" placeholder="Título da tarefa" maxlength="20">
-        <textarea  maxlength="96" class="input-tarefa"></textarea>
+        <input type="text" class="input-titulo" placeholder="Título da tarefa" maxlength="20"> 
+        <textarea class="input-tarefa"  maxlength="96"></textarea>
         <div class="acoes">
-          <button class="butao" onclick="location.href='../Tela Inicial/index.html'">
+          <button class="butao excluir">
             <img src="img/lixeira.png" alt="Excluir">
           </button>
           <button class="butao" onclick="location.href='../Tela de editar/Editar.html'">
@@ -30,37 +29,37 @@
           </button>
         </div>
       </div>
-
-     
+      
       <div class="bloco">
         <input type="text" class="input-titulo" placeholder="Título da tarefa" maxlength="20">
-        <textarea maxlength="96" class="input-tarefa"></textarea>
+        <textarea class="input-tarefa" maxlength="96"></textarea>
         <div class="acoes">
-          <button class="butao" onclick="location.href='../Tela Inicial/index.html'">
+          <button class="butao excluir">
             <img src="img/lixeira.png" alt="Excluir">
           </button>
-          <button class="butao" onclick="location.href='../Tela de editar/Editar.html'">
+          <button class="butao">
             <img src="img/lapis.png" alt="Editar">
           </button>
         </div>
       </div>
-
+      
       <div class="bloco">
         <input type="text" class="input-titulo" placeholder="Título da tarefa" maxlength="20">
-        <textarea maxlength="96"class="input-tarefa"></textarea>
+        <textarea class="input-tarefa"  maxlength="96"></textarea>
         <div class="acoes">
-          <button class="butao" onclick="location.href='../Tela Inicial/index.html'">
+          <button class="butao excluir">
             <img src="img/lixeira.png" alt="Excluir">
           </button>
-          <button class="butao" onclick="location.href='../Tela de editar/Editar.html'">
+          <button class="butao">
             <img src="img/lapis.png" alt="Editar">
           </button>
         </div>
       </div>
+      
     </section>
   </main>
 
-    <script>
+  <script>
   document.addEventListener('DOMContentLoaded', function () {
     const botoesExcluir = document.querySelectorAll('.butao.excluir');
     botoesExcluir.forEach(function (botao) {
@@ -74,7 +73,5 @@
   });
   </script>
   
-
-</html>
 </body>
-
+</html>
