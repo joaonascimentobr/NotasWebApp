@@ -75,4 +75,9 @@ Este projeto está licenciado sob a [Licença MIT](LICENSE).
 ## 📧 **Contato**
 Caso tenha dúvidas ou sugestões, entre em contato:  
 **Nome:** João Nascimento  
+<<<<<<< HEAD
 **Email:** [seuemail@exemplo.com](mailto:seuemail@exemplo.com)
+=======
+**Email:** [seuemail@exemplo.com](mailto:seuemail@exemplo.com)
+
+>>>>>>> b62f24bd2e129ab321d2f1a2e90232776c3e8e86
