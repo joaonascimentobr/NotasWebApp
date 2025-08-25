@@ -48,14 +48,16 @@ O aplicativo estará disponível para as seguintes plataformas:
 ---
 
 ## 📱 **Capturas de Tela**
-*(Adicione imagens ou GIFs do aplicativo aqui para atrair mais visualizações.)*
-![Texto alternativo](caminho/para/a/imagem)
+![Texto alternativo](img/github/prototipo.jpeg)
 
 
 ---
 
 ## 🛠️ **Tecnologias Utilizadas**
 *(Liste aqui as tecnologias, linguagens e frameworks utilizados no desenvolvimento do projeto.)*
+1. HTML
+2. CSS
+3. JS
 
 ---
 
