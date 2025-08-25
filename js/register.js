@@ -10,7 +10,7 @@ function register() {
   console.log("Email:", email);
   console.log("Nome:", nome);
   console.log("Password:", password);
-//   window.location.href = "telaPrincipal/telaPrincipal.html";
+  window.location.href = "telaNotas/Notas.html";
 }
 
 let form = document.querySelector("form");
