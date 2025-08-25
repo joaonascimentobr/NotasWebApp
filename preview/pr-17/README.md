@@ -54,7 +54,6 @@ O aplicativo estará disponível para as seguintes plataformas:
 **Fluxo de Cadastro e Registro**
 ![Texto alternativo](img/github/fluxoDeCadastroERegistro.jpeg)
 
-
 ---
 
 ## 🛠️ **Tecnologias Utilizadas**
@@ -63,7 +62,6 @@ O aplicativo estará disponível para as seguintes plataformas:
 1. HTML
 2. CSS
 3. JS
-
 
 ---
 
