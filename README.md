@@ -48,7 +48,6 @@ O aplicativo estará disponível para as seguintes plataformas:
 ---
 
 ## 📱 **Capturas de Tela**
-*(Adicione imagens ou GIFs do aplicativo aqui para atrair mais visualizações.)*
 ![Texto alternativo](https://media.discordapp.net/attachments/1303117210390102048/1409666752392069150/WhatsApp_Image_2025-08-25_at_19.27.18.jpeg?ex=68ae35f8&is=68ace478&hm=b93e8a354a7bd20dbbcb0e354e87c5f3667ee218b6b3db2b13fca16c250e730c&=&format=webp&width=1109&height=474)
 
 
