@@ -12,20 +12,14 @@
 }
 
 .butao {
-    position: relative;
-    left: 145px;
     width: 30px;
     border: none;
-    top: -10px;
     background: none;
     display: flex;
     flex-direction: column;
 }
 
 .voltar {
-    position: relative;
-    top: -520px;
-    left: -135px;
     width: 35px;
     border: none;
     background: none;
