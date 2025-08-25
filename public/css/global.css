@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+/* Estiliza a barra de rolagem inteira */
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+/* Estiliza a parte da barra onde o scroll se move */
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Estiliza o "polegar" da barra de rolagem */
+body::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Estiliza o polegar quando o mouse passa por cima */
+body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input {
+    border-color: black;
+    border-radius: 5px;
+    border: 1px solid #b8b8b8;
+}
+
+input {
+    -webkit-text-stroke: none;
+    /* For Webkit browsers */
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../public/css/global.css" />
+    <link rel="stylesheet" href="../../public/css/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
+      integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <title>Bloco de nota</title>
+  </head>
+  <body>
+    <div>
+      <section class="row">
+        <div class="col p-4 container-fluid h-100">
+          <div class="d-flex justify-content-center">
+            <div id="cabecario-imagem"></div>
+          </div>
+          <div id="login">
+            <form id="form" action="">
+              <div id="item1" class="w-100">
+                <div><label for="email">Email:</label></div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  class="ps-3 pe-3 pt-1 pb-1 w-100"
+                  placeholder="Insira seu e-mail"
+                />
+              </div>
+              <div id="item2" class="w-100">
+                <div><label for="password">Senha:</label></div>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  class="ps-3 pe-3 pt-1 pb-1 w-100"
+                  placeholder="Insira sua senha"
+                />
+              </div>
+              <div id="botao" class="w-100">
+                <button type="submit" class="btn btn-primary w-100 mt-4">
+                  Entrar
+                </button>
+
+                <span class="mt-4 mb-2"
+                  >Esqueceu sua Senha? <a href="#">Clique aqui</a></span
+                >
+              </div>
+            </form>
+          </div>
+        </div>
+        <div
+          class="col d-flex justify-content-center align-items-center bg-primary container-fluid text-white rounded-10"
+        >
+          <div>
+            <h1 class="text-center">É novo aqui?</h1>
+            <p class="mb-5" style="text-align: justify">
+              Crie uma conta para começar a usar o Bloco de Nota. É rápido e
+              fácil.
+            </p>
+            <a href="/cadastro" class="w-100"
+              ><button class="btn btn-light w-100">Clique aqui</button></a
+            >
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js"
+      integrity="sha512-EKWWs1ZcA2ZY9lbLISPz8aGR2+L7JVYqBAYTq5AXgBkSjRSuQEGqWx8R1zAX16KdXPaCjOCaKE8MCpU0wcHlHA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script src="../../backend/js/login.js"></script>
+  </body>
+</html>
