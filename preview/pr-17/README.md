@@ -50,6 +50,9 @@ O aplicativo estará disponível para as seguintes plataformas:
 ## 📱 **Capturas de Tela**
 ![Texto alternativo](img/github/prototipo.jpeg)
 
+**Fluxo de Cadastro e Registro**
+![Texto alternativo](img/github/fluxoDeCadastroERegistro.jpeg)
+
 
 ---
 
@@ -58,6 +61,7 @@ O aplicativo estará disponível para as seguintes plataformas:
 1. HTML
 2. CSS
 3. JS
+
 
 ---
 
