@@ -7,9 +7,6 @@ function register() {
   let nome = pickNome.value;
   let password = pickPassword.value;
 
-  console.log("Email:", email);
-  console.log("Nome:", nome);
-  console.log("Password:", password);
   window.location.href = "telaNotas/Notas.html";
 }
 
