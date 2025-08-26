@@ -48,15 +48,20 @@ O aplicativo estará disponível para as seguintes plataformas:
 ---
 
 ## 📱 **Capturas de Tela**
+
 ![Texto alternativo](img/github/prototipo.jpeg)
 
 **Fluxo de Cadastro e Registro**
 ![Texto alternativo](img/github/fluxoDeCadastroERegistro.jpeg)
 
+
+
+
 ---
 
 ## 🛠️ **Tecnologias Utilizadas**
 *(Liste aqui as tecnologias, linguagens e frameworks utilizados no desenvolvimento do projeto.)*
+
 1. HTML
 2. CSS
 3. JS
