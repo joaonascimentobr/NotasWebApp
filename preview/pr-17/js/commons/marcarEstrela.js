@@ -1,7 +1,6 @@
 function marcarEstrela(id) {
     let estrela = document.getElementById(id);
     if (!estrela) {
-        console.log("Não encontrado")
         return
     };
 

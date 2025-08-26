@@ -5,8 +5,6 @@ function login() {
   let email = pickEmail.value;
   let password = pickPassword.value;
 
-  console.log("Email:", email);
-  console.log("Password:", password);
   window.location.href = "telaNotas/Notas.html";
 }
 

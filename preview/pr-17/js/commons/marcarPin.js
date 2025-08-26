@@ -1,7 +1,6 @@
 function marcarPin(id) {
     let pin = document.getElementById(id);
     if (!pin) {
-        console.log("Não encontrado")
         return
     };
 
