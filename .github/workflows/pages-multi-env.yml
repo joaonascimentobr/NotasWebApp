@@ -1,4 +1,3 @@
-# .github/workflows/pages-multi-env.yml
 name: Pages - prod, develop e PR preview
 
 on:
@@ -9,9 +8,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]  # previews por PR
 
+# IMPORTANTE: nas Settings do repo, ative:
+# Settings → Actions → General → Workflow permissions → Read and write permissions
 permissions:
-  contents: write   # necessário para commitar no branch gh-pages
-  pull-requests: write  # comentar no PR com a URL do preview
+  contents: write        # necessário para push na gh-pages
+  pull-requests: write   # comentar no PR com a URL do preview
 
 concurrency:
   group: pages-${{ github.ref }}   # evita concorrência por ref
@@ -21,20 +22,17 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    # Só uma matriz simples p/ identificar o tipo de evento/ref
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0   # manter histórico completo evita surpresas
 
-      # Config opcional do Pages (não publicamos via actions/deploy-pages,
-      # mas ajuda a padronizar alguns metadados)
+      # Opcional, apenas padroniza metadados de Pages
       - name: Setup Pages (opcional)
         uses: actions/configure-pages@v5
 
       # --- Build do Jekyll ---
-      # Se você já tem Gemfile, Jekyll etc., pode usar a action oficial de build
       - name: Build com Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
@@ -46,7 +44,7 @@ jobs:
         id: dest
         run: |
           if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "dir=." >> $GITHUB_OUTPUT             # raiz (produção)
+            echo "dir=." >> $GITHUB_OUTPUT              # raiz (produção)
           elif [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "develop" ]]; then
             echo "dir=preview/develop" >> $GITHUB_OUTPUT
           elif [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
@@ -56,25 +54,34 @@ jobs:
           fi
           echo "Destino: $(cat $GITHUB_OUTPUT)"
 
-      # --- Publicar no branch gh-pages em subpasta específica ---
-      # Usamos keep_files: true para NÃO apagar outras pastas (ex.: outros PRs ou prod)
+      # --- Detectar se o PR é de fork (token fica read-only e o push falha) ---
+      - name: Checar se PR é de fork
+        id: forkcheck
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "is_fork=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT
+          echo "fork_owner=${{ github.event.pull_request.head.repo.owner.login }}" >> $GITHUB_OUTPUT
+          echo "fork_repo=${{ github.event.pull_request.head.repo.name }}" >> $GITHUB_OUTPUT
+
+      # --- Publicar no branch gh-pages (pula PR de fork) ---
       - name: Publicar no branch gh-pages
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name != 'pull_request' || steps.forkcheck.outputs.is_fork == 'false' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: _site
           destination_dir: ${{ steps.dest.outputs.dir }}
           keep_files: true
-          # Opcional: definir autor do commit
+          force_orphan: false    # necessário com keep_files para preservar outras pastas
           user_name: "github-actions[bot]"
           user_email: "41898282+github-actions[bot]@users.noreply.github.com"
 
-      # Comenta a URL no PR — funciona:
-      # 1) quando é evento pull_request
-      # 2) quando é push com PR associado ao commit (busca via API)
+      # --- Comentar a URL do preview no PR (não comenta se for fork) ---
       - name: Comentar URL do preview no PR
         uses: actions/github-script@v7
+        if: ${{ github.event_name != 'pull_request' || steps.forkcheck.outputs.is_fork == 'false' }}
         env:
           DEST_DIR: ${{ steps.dest.outputs.dir }}
         with:
@@ -82,29 +89,45 @@ jobs:
             const owner = context.repo.owner;
             const repo  = context.repo.repo;
 
-            // Descobrir o número do PR:
+            // Descobrir PR desta execução
             let prNumber = null;
             if (context.eventName === 'pull_request') {
               prNumber = context.payload.number;
             } else if (context.eventName === 'push') {
-              // Procura PR(s) associados ao commit desta execução
               const res = await github.rest.repos.listPullRequestsAssociatedWithCommit({
                 owner, repo, commit_sha: context.sha
               });
               const openPR = res.data.find(pr => pr.state === 'open');
               if (openPR) prNumber = openPR.number;
             }
-
             if (!prNumber) {
               core.info('Nenhum PR associado encontrado; nada a comentar.');
               return;
             }
 
-            // Monta a URL pública do Pages
             const base = `https://${owner}.github.io/${repo}`;
             const dest = process.env.DEST_DIR;
-            // normalizar caminho (raiz vs subpastas)
             const url  = dest === '.' ? `${base}/` : `${base}/${dest.replace(/^\/*/, '')}/`;
-
             const body = `🔍 **PR Preview publicado:** ${url}`;
+            await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+
+      # --- Se PR for de fork, deixar um comentário explicando por que não publicou ---
+      - name: Explicar por que não publicou (fork)
+        continue-on-error: true
+        uses: actions/github-script@v7
+        if: ${{ github.event_name == 'pull_request' && steps.forkcheck.outputs.is_fork == 'true' }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const prNumber = context.payload.number;
+            const body = [
+              "⚠️ **Preview não publicado**: este PR vem de um *fork*.",
+              "",
+              "- Por segurança, o `GITHUB_TOKEN` em PRs de fork tem permissões de leitura, então o bot não consegue fazer push na `gh-pages`.",
+              "- Opções:",
+              "  1) Rodar o build no repositório base após criar uma branch local.",
+              "  2) Usar `pull_request_target` (com muito cuidado e validações), ou",
+              "  3) Habilitar um fluxo alternativo só para forks (ex.: artifact + deploy manual)."
+            ].join("\n");
             await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });

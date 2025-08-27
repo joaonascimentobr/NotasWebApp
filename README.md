@@ -56,7 +56,6 @@ O aplicativo estará disponível para as seguintes plataformas:
 
 
 
-
 ---
 
 ## 🛠️ **Tecnologias Utilizadas**
