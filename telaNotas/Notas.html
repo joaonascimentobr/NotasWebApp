@@ -25,7 +25,7 @@
           <button class="butao excluir" >
             <img src="../img/lixeira.png" alt="Excluir">
           </button>
-          <button class="butao" onclick="location.href='../Tela_de_editar/Editar.html'">
+          <button class="butao" onclick="location.href='../telaEditar/Editar.html'">
             <img src="../img/lapis.png" alt="Editar">
           </button>
         </div>
@@ -38,7 +38,7 @@
           <button class="butao excluir">
             <img src="../img/lixeira.png" alt="Excluir">
           </button>
-          <button class="butao" onclick="location.href='../Tela_de_editar/Editar.html'">
+          <button class="butao" onclick="location.href='../telaEditar/Editar.html'">
             <img src="../img/lapis.png" alt="Editar">
           </button>
         </div>
@@ -51,7 +51,7 @@
           <button class="butao excluir">
             <img src="../img/lixeira.png" alt="Excluir">
           </button>
-          <button class="butao" onclick="location.href='../Tela_de_editar/Editar.html'">
+          <button class="butao" onclick="location.href='../telaEditar/Editar.html'">
             <img src="../img/lapis.png" alt="Editar">
           </button>
         </div>
@@ -60,6 +60,23 @@
     </section>
   </main>
   
+  <script>
+   document.addEventListener('DOMContentLoaded', function () {
+    const botoesExcluir = document.querySelectorAll('.butao.excluir');
+    botoesExcluir.forEach(function (botao) {
+      botao.addEventListener('click', function () {
+        const bloco = botao.closest('.bloco');
+        if (bloco) {
+          bloco.remove()
+        }
+      });
+    });
+  });
+//
+  document.querySelectorAll('.butao img[alt="Editar"]').forEach(btn =>
+  btn.addEventListener('click', () => location.href = '../telaEditar/Editar.html')
+);
+  </script>
 
 </body>
 </html>

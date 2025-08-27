@@ -1,3 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: 'DM Serif Text', serif;
+    background: #0f172a;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    height: 100vh; 
+}
+
+.phone_edit_add{
+    background-color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    width: 340px;
+    height: 550px; /* altura fixa */
+    gap: 30px;
+    border-radius: 20px;
+    padding: 30px;
+}
+
 .Bloco {
     position: relative;
     top: 30px;
@@ -12,17 +39,42 @@
 }
 
 .butao {
+    
+    position: relative;
+    left: 145px;
     width: 30px;
     border: none;
+    top: 20px;
     background: none;
     display: flex;
     flex-direction: column;
 }
 
 .voltar {
+    position: relative;
+    top: -450px;
+    left: -145px;
     width: 35px;
     border: none;
     background: none;
     display: flex;
     flex-direction: column;
+}
+#icone_voltar{
+    width: 40px;
+    height: 100%;
+}
+#Cabecalho{
+    position: relative;
+    right: 5%;
+    border: 1px solid red;
+    width: 325px;
+    display: flex;
+    gap: 15px;
+}
+.Titulo{
+    width: 100%;
+    border: 1px solid powderblue;
+    position: relative;
+    top: 10%;
 }
