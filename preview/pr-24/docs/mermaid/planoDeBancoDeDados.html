@@ -20,7 +20,7 @@
 {"@context":"https://schema.org","@type":"WebPage","headline":"NotasWebApp","url":"https://notas.joaonascimento.com/docs/mermaid/planoDeBancoDeDados.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=dc7350198fcd4afb30d86566b3f433e51cc73535">
+    <link rel="stylesheet" href="/assets/css/style.css?v=f091a71ad9d0c25aefae64a7f73c8dacb6739b4a">
     <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
 
 <!-- Setup Google Analytics -->
@@ -39,31 +39,31 @@
       <h1><a href="https://notas.joaonascimento.com/">NotasWebApp</a></h1>
       
 
-      <pre><code class="language-mermaid">classDiagram
-class Usuario {
-  +id: int &lt;&lt;PK&gt;&gt;
-  nome: varchar
-  +email: varchar &lt;&lt;unique, not null&gt;&gt;
-  +password: varchar &lt;&lt;not null&gt;&gt;
-  email_verificado: boolean = false
-}
+      <pre><code class="language-mermaid">  classDiagram
+  class Usuario {
+    +id: int &lt;&lt;PK&gt;&gt;
+    nome: varchar
+    +email: varchar &lt;&lt;unique, not null&gt;&gt;
+    +password: varchar &lt;&lt;not null&gt;&gt;
+    email_verificado: boolean = false
+  }
 
-class FotoPerfil {
-  +id: int &lt;&lt;PK&gt;&gt;
-  +usuario_id: int &lt;&lt;FK, unique&gt;&gt;
-  imagem: blob
-}
+  class FotoPerfil {
+    +id: int &lt;&lt;PK&gt;&gt;
+    +usuario_id: int &lt;&lt;FK, unique&gt;&gt;
+    imagem: blob
+  }
 
-class Item {
-  +id: int &lt;&lt;PK&gt;&gt;
-  descricao: text
-  data_criacao: datetime = now()
-  data_limite: datetime &lt;&lt;nullable&gt;&gt;
-  +usuario_id: int &lt;&lt;FK&gt;&gt;
-}
+  class Item {
+    +id: int &lt;&lt;PK&gt;&gt;
+    descricao: text
+    data_criacao: datetime = now()
+    data_limite: datetime &lt;&lt;nullable&gt;&gt;
+    +usuario_id: int &lt;&lt;FK&gt;&gt;
+  }
 
-Usuario "1" --&gt; "0..1" FotoPerfil : possui
-Usuario "1" --&gt; "0..*" Item : cria
+  Usuario "1" --&gt; "0..1" FotoPerfil : possui
+  Usuario "1" --&gt; "0..*" Item : cria
 </code></pre>
 
 
