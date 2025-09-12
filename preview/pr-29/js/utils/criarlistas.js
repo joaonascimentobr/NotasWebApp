@@ -6,9 +6,11 @@ area.innerHTML = "";
 
 let titulos = JSON.parse(localStorage.getItem("titulos")) || [];
 
+
 function salvarTitulos() {
   localStorage.setItem("titulos", JSON.stringify(titulos));
 }
+
 
 function criarTitulo() {
   const nome = prompt("Digite o Título");
@@ -24,53 +26,83 @@ function criarTitulo() {
 }
 
 
-function excluirTitulo(nome) {
+function excluirLocalStorageTitulo(nome) {
   if (confirm(`Deseja excluir "${nome}"?`)) {
     titulos = titulos.filter(t => t !== nome);
     localStorage.removeItem(`bloco_${nome}`);
     salvarTitulos();
     renderizarTitulo();
-
   }
 }
 
-// document.getElementById("btnCriar").addEventListener("click", criarTitulo);
+
+function excluirApiItem(id, descricao) {
+  if (confirm(`Deseja excluir "${descricao}" da API?`)) {
+    fetch(endpoint + "/" + id, { method: "DELETE" })
+      .then(response => {
+        if (!response.ok) throw new Error("Erro ao excluir");
+        renderizarTitulo();
+      })
+      .catch(error => console.error(error));
+  }
+}
 
 
-// Fazendo um GET
-fetch(endpoint)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("Erro na requisição: " + response.status);
-    }
-    return response.json(); // Converte para JSON
-  })
-  .then(data => {
-    data.forEach(nome => {
-      const div = document.createElement("div");
-      div.classList.add("bloco");
+function renderizarTitulo() {
+  area.innerHTML = ""; 
   
-      const link = document.createElement("a");
-      link.textContent = nome.descricao;
-      link.href = `bloco.html?titulo=${encodeURIComponent(nome)}`;
-      link.classList.add("titulo-link");
-  
-      const descricao = document.createElement("a");
-      descricao.textContent = nome.descricao
-      descricao.classList.add("descricao-link")
-  
-      const btnExcluir = document.createElement("button");
-      btnExcluir.textContent = "Excluir";
-      btnExcluir.classList.add("btn-excluir");
-      btnExcluir.onclick = () => excluirTitulo(nome);
-  
-      div.appendChild(link);
-      div.appendChild(descricao);
-      div.appendChild(btnExcluir);
-      area.appendChild(div);
-  
-    });
-  })
-  .catch(error => {
-    console.error("Erro:", error);
+  titulos.forEach(titulo => {
+    const div = document.createElement("div");
+    div.classList.add("bloco");
+
+    const link = document.createElement("a");
+    link.textContent = titulo;
+    link.href = `bloco.html?titulo=${encodeURIComponent(titulo)}`;
+    link.classList.add("titulo-link");
+
+    const btnExcluir = document.createElement("button");
+    btnExcluir.textContent = "Excluir";
+    btnExcluir.classList.add("btn-excluir");
+    btnExcluir.onclick = () => excluirLocalStorageTitulo(titulo);
+
+    div.appendChild(link);
+    div.appendChild(btnExcluir);
+    area.appendChild(div);
   });
+
+ 
+  fetch(endpoint)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Erro na requisição: " + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      data.forEach(item => {
+        const div = document.createElement("div");
+        div.classList.add("bloco");
+
+        const link = document.createElement("a");
+        link.textContent = item.descricao;
+        link.href = `bloco.html?titulo=${encodeURIComponent(item.descricao)}`;
+        link.classList.add("titulo-link");
+
+        const btnExcluir = document.createElement("button");
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.classList.add("btn-excluir");
+        btnExcluir.onclick = () => excluirApiItem(item.id, item.descricao);
+
+        div.appendChild(link);
+        div.appendChild(btnExcluir);
+        area.appendChild(div);
+      });
+    })
+    .catch(error => {
+      console.error("Erro:", error);
+    });
+}
+
+renderizarTitulo();
+
+
