@@ -1,3 +1,9 @@
+const url = "https://68b2430aa860fe41fd60a6c1.mockapi.io/";
+const endpoint = url + "items";
+
+const area = document.getElementById("areaTitulos");
+area.innerHTML = "";
+
 let titulos = JSON.parse(localStorage.getItem("titulos")) || [];
 
 function salvarTitulos() {
@@ -28,34 +34,43 @@ function excluirTitulo(nome) {
   }
 }
 
-function renderizarTitulo() {
-  const area = document.getElementById("areaTitulos");
-  area.innerHTML = "";
+// document.getElementById("btnCriar").addEventListener("click", criarTitulo);
 
-  titulos.forEach(nome => {
-    const div = document.createElement("div");
-    div.classList.add("bloco");
 
-    const link = document.createElement("a");
-    link.textContent = nome;
-    link.href = `bloco.html?titulo=${encodeURIComponent(nome)}`;
-    link.classList.add("titulo-link");
-
-    const descricao = document.createElement("a");
-    descricao.textContent = localStorage.getItem(`bloco_${nome}`)
-    descricao.classList.add("descricao-link")
-
-    const btnExcluir = document.createElement("button");
-    btnExcluir.textContent = "Excluir";
-    btnExcluir.classList.add("btn-excluir");
-    btnExcluir.onclick = () => excluirTitulo(nome);
-
-    div.appendChild(link);
-    div.appendChild(descricao);
-    div.appendChild(btnExcluir);
-    area.appendChild(div);
-
+// Fazendo um GET
+fetch(endpoint)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Erro na requisição: " + response.status);
+    }
+    return response.json(); // Converte para JSON
+  })
+  .then(data => {
+    data.forEach(nome => {
+      const div = document.createElement("div");
+      div.classList.add("bloco");
+  
+      const link = document.createElement("a");
+      link.textContent = nome.descricao;
+      link.href = `bloco.html?titulo=${encodeURIComponent(nome)}`;
+      link.classList.add("titulo-link");
+  
+      const descricao = document.createElement("a");
+      descricao.textContent = nome.descricao
+      descricao.classList.add("descricao-link")
+  
+      const btnExcluir = document.createElement("button");
+      btnExcluir.textContent = "Excluir";
+      btnExcluir.classList.add("btn-excluir");
+      btnExcluir.onclick = () => excluirTitulo(nome);
+  
+      div.appendChild(link);
+      div.appendChild(descricao);
+      div.appendChild(btnExcluir);
+      area.appendChild(div);
+  
+    });
+  })
+  .catch(error => {
+    console.error("Erro:", error);
   });
-}
-renderizarTitulo();
-document.getElementById("btnCriar").addEventListener("click", criarTitulo);
